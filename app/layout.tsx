@@ -10,9 +10,9 @@ const fontSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "NOVA SBE Canteen Waste Dashboard",
+  title: "NOVA Canteen Digital Assistant",
   description:
-    "A mobile-first MVP dashboard to track canteen production, sales, waste, and menu recommendations."
+    "A planning assistant for canteen production, purchasing, history, and financial insight."
 };
 
 export default function RootLayout({

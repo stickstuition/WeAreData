@@ -5,9 +5,9 @@ export default function HistoryPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="History"
-        title="Look back at service data without spreadsheet pain."
-        description="Filter by dish, weekday, weather, or exam period to understand whether poor performance came from the menu choice or from the surrounding context."
+        eyebrow="Data Analytics Zone"
+        title="History"
+        description="Store and review operational history: people, sales, revenue, P.O. trends per dish, overtime impact, and dish type performance."
       />
       <HistoryClientPage />
     </div>

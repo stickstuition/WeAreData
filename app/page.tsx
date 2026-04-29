@@ -5,9 +5,9 @@ export default function HomePage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Dashboard"
-        title="A clear read on waste, demand, and menu quality."
-        description="This home view gives Suzanna a fast end-of-day summary: how much was made, how much sold, where waste is building up, and which dishes look safe or risky for future planning."
+        eyebrow="Operation Zone"
+        title="Dashboard"
+        description="Build the Day 1-5 weekly plan by food category. The chosen dishes become the data source for DailyItemLab without duplicating the planning UI."
       />
       <DashboardClientPage />
     </div>
