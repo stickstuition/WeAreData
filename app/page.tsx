@@ -1,4 +1,4 @@
-import { DashboardClientPage } from "@/components/client-pages";
+import { MobileDashboardClientPage } from "@/components/client-pages";
 import { PageHeader } from "@/components/page-header";
 
 export default function HomePage() {
@@ -7,7 +7,7 @@ export default function HomePage() {
       <PageHeader
         title="Dashboard"
       />
-      <DashboardClientPage />
+      <MobileDashboardClientPage />
     </div>
   );
 }

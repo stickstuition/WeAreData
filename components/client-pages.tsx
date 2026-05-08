@@ -172,8 +172,9 @@ export function DashboardClientPage() {
   const duplicates = useMemo(() => getDuplicateDishIds(weeklyPlan), [weeklyPlan]);
   const ruleIssues = useMemo(() => getCategoryRuleIssues(weeklyPlan), [weeklyPlan]);
   const [forecast, setForecast] = useState<WeatherForecastDay[]>([]);
-  const [weatherStatus, setWeatherStatus] = useState("Using planning assumptions");
+  const weatherStatus = forecast.length ? "Forecast loaded" : "Using planning assumptions";
   const selectedWeather = forecast[DAYS.indexOf(selectedDay as (typeof DAYS)[number])];
+  const selectedRecipes = useMemo(() => getSelectedRecipesForDay(weeklyPlan, selectedDay), [weeklyPlan, selectedDay]);
   const reviewRows = useMemo(
     () => getDailyReviewRows(weeklyPlan, forecasts, selectedDay, history, selectedWeather),
     [weeklyPlan, forecasts, selectedDay, history, selectedWeather]
@@ -187,14 +188,9 @@ export function DashboardClientPage() {
         if (!active) return;
         if (Array.isArray(data.forecast) && data.forecast.length) {
           setForecast(data.forecast);
-          setWeatherStatus("Forecast loaded");
-        } else {
-          setWeatherStatus("Using planning assumptions");
         }
       })
-      .catch(() => {
-        if (active) setWeatherStatus("Using planning assumptions");
-      });
+      .catch(() => undefined);
     return () => {
       active = false;
     };
@@ -366,6 +362,151 @@ export function DashboardClientPage() {
               <div className="text-slate">{en}</div>
             </div>
           ))}
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
+
+export function MobileDashboardClientPage() {
+  const hydrated = useAppData();
+  const language = useCanteenStore((state) => state.language);
+  const weeklyPlan = useCanteenStore((state) => state.weeklyPlan);
+  const selectedDay = useCanteenStore((state) => state.selectedDay);
+  const setSelectedDay = useCanteenStore((state) => state.setSelectedDay);
+  const optimizePlan = useCanteenStore((state) => state.optimizePlan);
+  const history = useCanteenStore((state) => state.history);
+  const forecasts = useCanteenStore((state) => state.forecasts);
+  const updateForecast = useCanteenStore((state) => state.updateForecast);
+  const duplicates = useMemo(() => getDuplicateDishIds(weeklyPlan), [weeklyPlan]);
+  const [forecast, setForecast] = useState<WeatherForecastDay[]>([]);
+  const selectedWeather = forecast[DAYS.indexOf(selectedDay as (typeof DAYS)[number])];
+  const selectedRecipes = useMemo(() => getSelectedRecipesForDay(weeklyPlan, selectedDay), [weeklyPlan, selectedDay]);
+  const reviewRows = useMemo(
+    () => getDailyReviewRows(weeklyPlan, forecasts, selectedDay, history, selectedWeather),
+    [weeklyPlan, forecasts, selectedDay, history, selectedWeather]
+  );
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/weather")
+      .then((response) => response.json())
+      .then((data) => {
+        if (active && Array.isArray(data.forecast)) setForecast(data.forecast);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (!hydrated) return <div className="text-sm text-slate">{t(language, "Loading dashboard...")}</div>;
+
+  return (
+    <div className="space-y-4">
+      <SectionCard title="Weekly Plan">
+        <div className="mb-4 grid grid-cols-[1fr_auto] gap-3">
+          <label className="text-sm font-medium">
+            Day
+            <select
+              value={selectedDay}
+              onChange={(event) => setSelectedDay(event.target.value)}
+              className="mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-3"
+            >
+              {DAYS.map((day, index) => (
+                <option key={day} value={day}>
+                  {day}{forecast[index] ? ` - ${forecast[index].maxTemperatureC}C` : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={() => optimizePlan(forecast)}
+            className="self-end rounded-md bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-sage"
+          >
+            Optimise
+          </button>
+        </div>
+
+        {selectedWeather ? (
+          <div className="mb-4 rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm">
+            <div className="font-semibold">{selectedWeather.maxTemperatureC}C</div>
+            <div className="text-slate">{selectedWeather.condition}</div>
+          </div>
+        ) : null}
+
+        <div className="space-y-3">
+          {FOOD_CATEGORIES.map((category) => (
+            <div key={category} className="rounded-lg border border-zinc-200 bg-white p-3">
+              <div className="mb-2 text-sm font-semibold">{categoryLabel(language, category)}</div>
+              <div className="space-y-2">
+                {weeklyPlan[selectedDay][category].map((recipeId, index) => (
+                  <RecipeSelect
+                    key={`${selectedDay}-${category}-${index}`}
+                    day={selectedDay}
+                    category={category}
+                    slotIndex={index}
+                    value={recipeId}
+                    duplicate={duplicates.includes(recipeId)}
+                    language={language}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Today">
+        <div className="space-y-2">
+          {selectedRecipes.slice(0, 5).map((recipe) => {
+            const auto = getAutoForecast(recipe, selectedDay, history, forecasts, selectedWeather);
+            const impact = getWeatherImpact(recipe, selectedWeather);
+            return (
+              <div key={recipe.id} className="flex items-center justify-between gap-3 rounded-lg bg-mist px-3 py-3 text-sm">
+                <div className="min-w-0">
+                  <div className="truncate font-semibold">{language === "Portuguese" ? recipe.portugueseName : recipe.name}</div>
+                  <div className="text-slate">{categoryLabel(language, recipe.category)}</div>
+                </div>
+                <div className={impact.multiplier === 1 ? "font-semibold" : "font-semibold text-sage"}>{auto.value}</div>
+              </div>
+            );
+          })}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="4pm Review">
+        <div className="space-y-3">
+          {reviewRows.map((row) => {
+            const current = forecasts.find((item) => item.day === selectedDay && item.recipeId === row.recipe.id);
+            return (
+              <div key={row.recipe.id} className="rounded-lg border border-zinc-200 bg-white p-3 text-sm">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="truncate font-semibold">{language === "Portuguese" ? row.recipe.portugueseName : row.recipe.name}</div>
+                  <StatusPill tone={row.recommendation === "overproduced" || row.recommendation === "underproduced" ? "warning" : "neutral"}>
+                    {row.recommendation}
+                  </StatusPill>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <label>
+                    <span className="mb-1 block font-medium">Sold</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={current?.actualSold ?? 0}
+                      onChange={(event) => updateForecast(selectedDay, row.recipe.id, { actualSold: Number(event.target.value) })}
+                      className="w-full rounded-md border border-zinc-300 px-3 py-2"
+                    />
+                  </label>
+                  <div className="rounded-md bg-mist px-3 py-2">
+                    <div className="font-medium">Next</div>
+                    <div>{row.optimizedNext}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </SectionCard>
     </div>
@@ -804,8 +945,7 @@ export function ScannerClientPage() {
     <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
       <SectionCard title="Document Scanner">
         <label className="flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 bg-mist px-4 py-8 text-center transition hover:border-sage">
-          <span className="text-base font-semibold">Open camera</span>
-          <span className="mt-1 text-sm text-slate">Capture invoices, recipe sheets, orders, or sales notes.</span>
+          <span className="text-base font-semibold">Scan document</span>
           <input type="file" accept="image/*" capture="environment" onChange={handleFile} className="sr-only" />
         </label>
         <div className="mt-4 space-y-2">
@@ -858,12 +998,12 @@ export function ScannerClientPage() {
             <textarea
               value={draftText}
               onChange={(event) => setDraftText(event.target.value)}
-              placeholder="Paste or enter the text found on the document before parsing."
+              placeholder="Extracted text"
               className="min-h-32 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
             />
             <div className="flex gap-2">
               <button type="button" onClick={applyParse} className="rounded-md border border-zinc-300 px-4 py-2 font-semibold">
-                Parse
+                Process
               </button>
               <button type="button" onClick={() => commitScan(active.id)} className="rounded-md bg-sage px-4 py-2 font-semibold text-white">
                 Commit

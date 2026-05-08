@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import { BarChart3, CalendarDays, Camera, ClipboardList, LogOut, ShoppingCart, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
 
 import { useCanteenStore } from "@/lib/storage";
 import { cn } from "@/lib/utils";
@@ -18,11 +20,13 @@ const navItems: { href: Route; label: string; icon: LucideIcon }[] = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const hydrate = useCanteenStore((state) => state.hydrate);
   const hydrated = useCanteenStore((state) => state.hydrated);
   const authenticated = useCanteenStore((state) => state.authenticated);
   const login = useCanteenStore((state) => state.login);
   const logout = useCanteenStore((state) => state.logout);
+  const addScan = useCanteenStore((state) => state.addScan);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -52,6 +56,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (!hydrated) return <div className="min-h-screen bg-white" />;
 
+  async function handleCameraCapture(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const imageDataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    addScan({
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      documentType: "unknown",
+      imageDataUrl,
+      parsedText: "",
+      lines: [],
+      committed: false
+    });
+    event.target.value = "";
+    router.push("/scan" as Route);
+  }
+
   if (!authenticated) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-white px-5 text-ink">
@@ -63,11 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           className="w-full max-w-sm rounded-lg border border-zinc-200 bg-white p-6 shadow-soft"
         >
           <div className="mb-8">
-            <div className="flex items-center gap-3">
-              <span className="h-10 w-3 rounded bg-sage" />
-              <span className="h-8 w-3 rounded bg-coral" />
-              <h1 className="text-3xl font-semibold tracking-normal">TEMPERO</h1>
-            </div>
+            <img src="/Tempero_Logo.png" alt="TEMPERO" className="h-auto w-56" />
           </div>
           <label className="mb-4 block text-sm font-medium">
             User
@@ -102,9 +124,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 pb-28 pt-4 sm:px-6">
         <header className="mb-4 flex items-center justify-between border-b border-zinc-200 pb-4">
           <Link href="/" className="flex items-center gap-3">
-            <span className="h-9 w-3 rounded bg-sage" />
-            <span className="h-7 w-3 rounded bg-coral" />
-            <span className="text-2xl font-semibold tracking-normal">TEMPERO</span>
+            <img src="/Tempero_Logo.png" alt="TEMPERO" className="h-11 w-auto" />
           </Link>
           <div className="flex items-center gap-2">
             {"Notification" in globalThis ? (
@@ -133,16 +153,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-zinc-200 bg-white/95 px-2 pb-3 pt-2 backdrop-blur">
         <div className="mx-auto grid max-w-md grid-cols-5 items-end gap-1">
           {navItems.slice(0, 2).map((item) => <NavItem key={item.href} item={item} pathname={pathname} />)}
-          <Link
-            href={"/scan" as Route}
+          <label
             aria-label="Scan document"
             className={cn(
-              "mx-auto -mt-8 flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-sage text-white shadow-soft transition hover:bg-ink",
+              "mx-auto -mt-8 flex h-16 w-16 cursor-pointer items-center justify-center rounded-full border-4 border-white bg-sage text-white shadow-soft transition hover:bg-ink",
               pathname === "/scan" && "bg-coral"
             )}
           >
             <Camera className="h-7 w-7" />
-          </Link>
+            <input type="file" accept="image/*" capture="environment" onChange={handleCameraCapture} className="sr-only" />
+          </label>
           {navItems.slice(2).map((item) => <NavItem key={item.href} item={item} pathname={pathname} />)}
         </div>
       </nav>
