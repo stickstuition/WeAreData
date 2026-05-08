@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tempero Business Plan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        @page {
+            size: A4 portrait;
+            margin: 12mm;
+        }
+        .page {
+            background: white;
+            page-break-after: always;
+            margin: 0 auto;
+            width: calc(210mm - 24mm);
+            min-height: calc(297mm - 24mm);
+            padding: 12mm;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 40px;
+        }
+        .cover-page img {
+            width: 200px;
+            height: auto;
+        }
+        .cover-page h1 {
+            font-size: 48px;
+            color: #2f8d46;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        .cover-page .tagline {
+            font-size: 18px;
+            color: #666;
+            font-style: italic;
+        }
+        .cover-page .meta {
+            margin-top: 60px;
+            border-top: 2px solid #2f8d46;
+            padding-top: 30px;
+            color: #666;
+        }
+        .cover-page .meta p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        h2 {
+            color: #2f8d46;
+            font-size: 24px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #2f8d46;
+            padding-bottom: 6px;
+        }
+        h3 {
+            color: #333;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 8px;
+            text-align: justify;
+            font-size: 13px;
+        }
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 10px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 12px;
+        }
+        th {
+            background: #2f8d46;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .content-page {
+            padding: 0;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .page {
+                page-break-after: always;
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- COVER PAGE -->
+    <div class="page cover-page">
+        <img src="Tempero_Logo.png" alt="Tempero Logo">
+        <h1>TEMPERO</h1>
+        <p class="tagline">Business Plan</p>
+        <div class="meta">
+            <p><strong>Data-driven planning and insight platform</strong></p>
+            <p>Nova SBE Canteen Pilot</p>
+            <p>May 2026</p>
+        </div>
+    </div>
+
+    <!-- CONTENT PAGE 1 -->
+    <div class="page content-page">
+        <h2>1. Executive Summary</h2>
+        <p>Tempero is a data-driven planning and insight platform from WeAreData, a UK-based company led by CEO Davide Calvi. It helps teams create value by blending student attendance data, operational insights, and the TIAGO Meta Framework into practical decisions.</p>
+        
+        <h3>Objectives:</h3>
+        <ul>
+            <li>Launch the Tempero MVP and complete a Nova SBE canteen pilot.</li>
+            <li>Validate the concept with attendance and service usage data.</li>
+            <li>Demonstrate the value of data-driven planning for campus hospitality.</li>
+            <li>Use pilot results to shape a broader market offering.</li>
+        </ul>
+
+        <p><strong>Time horizon:</strong> 12 months, divided into 4 periods of 3 months each.</p>
+
+        <h2>2. Business Description</h2>
+        <p>Tempero is a warm, human-focused platform that uses data like a good recipe: thoughtfully combined, easy to follow, and built for practical results.</p>
+
+        <h3>Mission:</h3>
+        <p>Help teams turn data into decisions that feel smart, simple, and meaningful.</p>
+
+        <h3>Value proposition:</h3>
+        <ul>
+            <li>Combine attendance and operational data with innovation frameworks.</li>
+            <li>Blend smoothly with existing hospitality and canteen systems rather than replacing them.</li>
+            <li>Provide clear recommendations for improving service, supply planning, and operations.</li>
+            <li>Support teams in delivering measurable value without unnecessary complexity.</li>
+        </ul>
+    </div>
+
+    <!-- CONTENT PAGE 2 -->
+    <div class="page content-page">
+        <h2>3. Market Analysis</h2>
+        
+        <h3>Target customers:</h3>
+        <ul>
+            <li>Educational institutions managing dining and attendance.</li>
+            <li>Hospitality and canteen operators.</li>
+            <li>Innovation teams in service businesses.</li>
+            <li>Consultants and advisors focused on operational value.</li>
+        </ul>
+
+        <h3>Customer needs:</h3>
+        <ul>
+            <li>Better understanding of attendance patterns and demand.</li>
+            <li>Practical tools for planning student-facing operations.</li>
+            <li>Support for existing hospitality workflows and operational systems.</li>
+            <li>Ability to digitize manual documents, such as invoices, and bring that data into one dashboard.</li>
+        </ul>
+
+        <h3>Pilot context:</h3>
+        <p>The product will be run and tested by Susanna, who manages the Nova SBE canteen operated by Eurest. The pilot is built as a half-semester test (approximately 2 months) to capture student attendance and canteen usage data. The pilot will also test document scanning and parsing of manual invoices so the canteen can move paper processes into the dashboard.</p>
+
+        <h3>Competitive edge:</h3>
+        <ul>
+            <li>Combines Portuguese warmth with UK-based execution.</li>
+            <li>Built around the TIAGO Meta Framework and Professor Luis Filipe Lages's guidance.</li>
+            <li>Feels softer and more human than typical enterprise data tools.</li>
+        </ul>
+    </div>
+
+    <!-- CONTENT PAGE 3 -->
+    <div class="page content-page">
+        <h2>4. Product / Service Offering</h2>
+
+        <h3>Core product:</h3>
+        <ul>
+            <li>Value creation wheel dashboard.</li>
+            <li>Insight pages for trends, ideas, and recommendations.</li>
+            <li>Planner and roadmap pages for implementation.</li>
+            <li>Document scanning and parsing for manual invoices and other paper records.</li>
+            <li>Integration with existing hospitality and canteen systems to blend new insights with current operations.</li>
+        </ul>
+
+        <h3>Premium service offerings:</h3>
+        <ul>
+            <li>Custom reporting and dashboards.</li>
+            <li>Team collaboration features.</li>
+            <li>Data integration and onboarding consultancy.</li>
+            <li>Support for adding paper-based financial and inventory data into the digital workflow.</li>
+        </ul>
+
+        <h2>5. Business Model</h2>
+
+        <h3>Revenue streams:</h3>
+        <ul>
+            <li>Subscription revenue from platform access at 39.99€ per user per month.</li>
+            <li>One-time onboarding and consulting fees.</li>
+            <li>Future premium add-ons and reporting planned for Year 2.</li>
+        </ul>
+
+        <h3>Pricing assumptions:</h3>
+        <ul>
+            <li>Pilot pricing is 39.99€ per user per month.</li>
+            <li>Year 1 will be intentionally low-volume as the product proves fit.</li>
+            <li>Premium services are reserved for Year 2 once core adoption is established.</li>
+        </ul>
+    </div>
+
+    <!-- CONTENT PAGE 4 -->
+    <div class="page content-page">
+        <h2>6. Team and Operations Plan</h2>
+
+        <h3>Leadership:</h3>
+        <p><strong>Davide Calvi</strong> — CEO, WeAreData</p>
+
+        <h3>Core team:</h3>
+        <ul>
+            <li>Paddy Rush — full stack development & strategy.</li>
+            <li>Laura Christin Karstädt — marketing.</li>
+            <li>Vittoria Niero — entrepreneurship.</li>
+            <li>Letizia Pomatto — entrepreneurship.</li>
+            <li>Giovanni Bindi — operations.</li>
+        </ul>
+
+        <h3>Pilot oversight:</h3>
+        <p>Susanna will run the Nova SBE canteen pilot as part of the Eurest-operated service.</p>
+
+        <h3>Advisory:</h3>
+        <p>Professor Luis Filipe Lages provides academic direction through the TIAGO Meta Framework.</p>
+
+        <h3>Development priorities:</h3>
+        <ul>
+            <li>Prioritize MVP flows that connect attendance data, student demand, and operational recommendations.</li>
+            <li>Build the interfaces and reporting needed for the canteen pilot.</li>
+            <li>Add the ability to scan and parse manual documents like invoices.</li>
+            <li>Ensure the product works alongside existing point-of-sale and inventory systems.</li>
+        </ul>
+
+        <h2>7. Funding Opportunity</h2>
+        <p>Tempero will seek EU grant support to accelerate pilot delivery and product development. The most relevant funding avenue is <strong>Horizon Europe</strong>, especially SME-oriented calls under the Digital, Industry and Space cluster.</p>
+
+        <h3>Potential grant use:</h3>
+        <ul>
+            <li>Support the Nova SBE pilot and canteen integration.</li>
+            <li>Fund document scanning and invoice parsing development.</li>
+            <li>Cover early adoption and reporting work with Eurest and academic advisors.</li>
+        </ul>
+    </div>
+
+</body>
+</html>
