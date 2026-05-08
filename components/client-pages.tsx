@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import type { ChangeEvent } from "react";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import {
@@ -17,6 +18,7 @@ import {
   getAutoForecast,
   getCategoryRuleIssues,
   getDailyPurchaseNeeds,
+  getDailyReviewRows,
   getDishTypePerformance,
   getDuplicateDishIds,
   getPurchaseScheduleRows,
@@ -29,7 +31,7 @@ import {
   round
 } from "@/lib/analytics";
 import { useCanteenStore } from "@/lib/storage";
-import { FoodCategory, WeatherForecastDay } from "@/lib/types";
+import { FoodCategory, ParsedScanLine, ScanDocumentType, WeatherForecastDay } from "@/lib/types";
 import { formatCurrency, formatPercent } from "@/lib/utils";
 
 import { SectionCard } from "./section-card";
@@ -165,10 +167,17 @@ export function DashboardClientPage() {
   const setSelectedDay = useCanteenStore((state) => state.setSelectedDay);
   const optimizePlan = useCanteenStore((state) => state.optimizePlan);
   const history = useCanteenStore((state) => state.history);
+  const forecasts = useCanteenStore((state) => state.forecasts);
+  const updateForecast = useCanteenStore((state) => state.updateForecast);
   const duplicates = useMemo(() => getDuplicateDishIds(weeklyPlan), [weeklyPlan]);
   const ruleIssues = useMemo(() => getCategoryRuleIssues(weeklyPlan), [weeklyPlan]);
   const [forecast, setForecast] = useState<WeatherForecastDay[]>([]);
   const [weatherStatus, setWeatherStatus] = useState("Using planning assumptions");
+  const selectedWeather = forecast[DAYS.indexOf(selectedDay as (typeof DAYS)[number])];
+  const reviewRows = useMemo(
+    () => getDailyReviewRows(weeklyPlan, forecasts, selectedDay, history, selectedWeather),
+    [weeklyPlan, forecasts, selectedDay, history, selectedWeather]
+  );
 
   useEffect(() => {
     let active = true;
@@ -304,10 +313,55 @@ export function DashboardClientPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title={label(language, "Paper Workflow Terms", "Termos do Processo em Papel")}>
+      <SectionCard title="4pm Daily Review">
+        <div className="grid gap-3 lg:grid-cols-2">
+          {reviewRows.map((row) => {
+            const current = forecasts.find((item) => item.day === selectedDay && item.recipeId === row.recipe.id);
+            return (
+              <div key={row.recipe.id} className="rounded-lg border border-zinc-200 bg-white p-4 text-sm">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="font-semibold">{language === "Portuguese" ? row.recipe.portugueseName : row.recipe.name}</div>
+                  <StatusPill tone={row.recommendation === "overproduced" || row.recommendation === "underproduced" ? "warning" : "neutral"}>
+                    {row.recommendation}
+                  </StatusPill>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <label>
+                    <span className="mb-1 block font-medium">Sold</span>
+                    <input
+                      type="number"
+                      min={0}
+                      value={current?.actualSold ?? 0}
+                      onChange={(event) => updateForecast(selectedDay, row.recipe.id, { actualSold: Number(event.target.value) })}
+                      className="w-full rounded-md border border-zinc-300 px-3 py-2"
+                    />
+                  </label>
+                  <div className="rounded-md bg-mist px-3 py-2">
+                    <div className="font-medium">Next target</div>
+                    <div>{row.optimizedNext}</div>
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 text-slate">
+                  <div>Planned {row.planned}</div>
+                  <div>Waste {row.waste}</div>
+                  <div>Short {row.shortage}</div>
+                </div>
+                <input
+                  value={current?.varianceNote ?? ""}
+                  onChange={(event) => updateForecast(selectedDay, row.recipe.id, { varianceNote: event.target.value })}
+                  placeholder="Review note"
+                  className="mt-3 w-full rounded-md border border-zinc-300 px-3 py-2"
+                />
+              </div>
+            );
+          })}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Paper Workflow Terms">
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
           {Object.entries(PORTUGUESE_TO_ENGLISH).map(([pt, en]) => (
-            <div key={pt} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+            <div key={pt} className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm">
               <div className="font-medium">{pt}</div>
               <div className="text-slate">{en}</div>
             </div>
@@ -670,6 +724,216 @@ export function InsightClientPage() {
               <div className="text-slate">Covers food for {item.coversFoodFor.join(" and ")}</div>
             </div>
           ))}
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
+
+function inferDocumentType(text: string): ScanDocumentType {
+  const value = text.toLowerCase();
+  if (value.includes("invoice") || value.includes("total") || value.includes("vat")) return "invoice";
+  if (value.includes("recipe") || value.includes("portion") || value.includes("ingredient")) return "recipe sheet";
+  if (value.includes("order") || value.includes("supplier")) return "ordering";
+  if (value.includes("sold") || value.includes("waste")) return "sales";
+  return "unknown";
+}
+
+function parseScanLines(text: string): ParsedScanLine[] {
+  return text
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const numbers = line.match(/\d+(?:[.,]\d+)?/g)?.map((item) => Number(item.replace(",", "."))) ?? [];
+      return {
+        label: line.replace(/\d+(?:[.,]\d+)?/g, "").replace(/\s+/g, " ").trim() || line,
+        quantity: numbers[0] ?? 1,
+        unit: line.match(/\b(kg|g|l|unit|units|portion|portions)\b/i)?.[0]?.toLowerCase() ?? "unit",
+        unitCost: numbers[1],
+        total: numbers[2] ?? numbers[1]
+      };
+    });
+}
+
+export function ScannerClientPage() {
+  const hydrated = useAppData();
+  const scans = useCanteenStore((state) => state.scans);
+  const addScan = useCanteenStore((state) => state.addScan);
+  const updateScan = useCanteenStore((state) => state.updateScan);
+  const commitScan = useCanteenStore((state) => state.commitScan);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const active = scans.find((scan) => scan.id === activeId) ?? scans[0];
+  const [draftText, setDraftText] = useState("");
+
+  async function handleFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const imageDataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const scan = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      documentType: "unknown" as ScanDocumentType,
+      imageDataUrl,
+      parsedText: "",
+      lines: [],
+      committed: false
+    };
+    addScan(scan);
+    setActiveId(scan.id);
+    setDraftText("");
+  }
+
+  function applyParse() {
+    if (!active) return;
+    updateScan(active.id, {
+      parsedText: draftText,
+      documentType: inferDocumentType(draftText),
+      lines: parseScanLines(draftText)
+    });
+  }
+
+  if (!hydrated) return <div className="text-sm text-slate">Loading scanner...</div>;
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+      <SectionCard title="Document Scanner">
+        <label className="flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-300 bg-mist px-4 py-8 text-center transition hover:border-sage">
+          <span className="text-base font-semibold">Open camera</span>
+          <span className="mt-1 text-sm text-slate">Capture invoices, recipe sheets, orders, or sales notes.</span>
+          <input type="file" accept="image/*" capture="environment" onChange={handleFile} className="sr-only" />
+        </label>
+        <div className="mt-4 space-y-2">
+          {scans.map((scan) => (
+            <button
+              key={scan.id}
+              type="button"
+              onClick={() => {
+                setActiveId(scan.id);
+                setDraftText(scan.parsedText);
+              }}
+              className={`w-full rounded-md border px-3 py-2 text-left text-sm ${
+                active?.id === scan.id ? "border-sage bg-sage/10" : "border-zinc-200 bg-white"
+              }`}
+            >
+              <div className="font-medium">{scan.documentType}</div>
+              <div className="text-slate">{new Date(scan.createdAt).toLocaleString()} {scan.committed ? "- committed" : ""}</div>
+            </button>
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Review Input Data">
+        {active ? (
+          <div className="space-y-4">
+            <img src={active.imageDataUrl} alt="Scanned document" className="max-h-72 w-full rounded-lg border border-zinc-200 object-contain" />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="text-sm font-medium">
+                Type
+                <select
+                  value={active.documentType}
+                  onChange={(event) => updateScan(active.id, { documentType: event.target.value as ScanDocumentType })}
+                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2"
+                >
+                  {["invoice", "recipe sheet", "ordering", "sales", "unknown"].map((type) => (
+                    <option key={type}>{type}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm font-medium">
+                Total value
+                <input
+                  type="number"
+                  value={active.totalValue ?? ""}
+                  onChange={(event) => updateScan(active.id, { totalValue: Number(event.target.value) })}
+                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2"
+                />
+              </label>
+            </div>
+            <textarea
+              value={draftText}
+              onChange={(event) => setDraftText(event.target.value)}
+              placeholder="Paste or enter the text found on the document before parsing."
+              className="min-h-32 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
+            />
+            <div className="flex gap-2">
+              <button type="button" onClick={applyParse} className="rounded-md border border-zinc-300 px-4 py-2 font-semibold">
+                Parse
+              </button>
+              <button type="button" onClick={() => commitScan(active.id)} className="rounded-md bg-sage px-4 py-2 font-semibold text-white">
+                Commit
+              </button>
+            </div>
+            <div className="space-y-2">
+              {active.lines.map((line, index) => (
+                <div key={`${line.label}-${index}`} className="grid grid-cols-[1fr_4rem_4rem] gap-2 rounded-md bg-mist px-3 py-2 text-sm">
+                  <span className="truncate font-medium">{line.label}</span>
+                  <span>{line.quantity}</span>
+                  <span>{line.unit}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-lg bg-mist px-4 py-8 text-center text-sm text-slate">No scans yet.</div>
+        )}
+      </SectionCard>
+    </div>
+  );
+}
+
+export function OrderingClientPage() {
+  const hydrated = useAppData();
+  const weeklyPlan = useCanteenStore((state) => state.weeklyPlan);
+  const forecasts = useCanteenStore((state) => state.forecasts);
+  const history = useCanteenStore((state) => state.history);
+  const purchaseRows = useMemo(() => getPurchaseScheduleRows(weeklyPlan, forecasts, history, []), [weeklyPlan, forecasts, history]);
+  const scans = useCanteenStore((state) => state.scans);
+  const committedOrders = scans.filter((scan) => scan.committed && ["invoice", "ordering"].includes(scan.documentType));
+
+  if (!hydrated) return <div className="text-sm text-slate">Loading ordering...</div>;
+
+  return (
+    <div className="space-y-5">
+      <SectionCard title="Ordering">
+        <div className="space-y-3">
+          {purchaseRows.map((row) => (
+            <div key={row.purchaseDay} className="rounded-lg border border-zinc-200 bg-white p-4 text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div className="font-semibold">{row.purchaseDay}</div>
+                <div className="font-semibold text-sage">{formatCurrency(row.estimatedPO)}</div>
+              </div>
+              <div className="mt-3 grid gap-2">
+                {row.aggregated.map((item) => (
+                  <div key={`${row.purchaseDay}-${item.ingredient}`} className="grid grid-cols-[1fr_auto_auto] gap-2 rounded-md bg-mist px-3 py-2">
+                    <span className="truncate">{item.ingredient}</span>
+                    <span>{item.suggestedQuantity} {item.unit}</span>
+                    <span className={item.suggestion === "buy less" ? "text-coral" : item.suggestion === "buy more" ? "text-sage" : "text-slate"}>
+                      {item.suggestion}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Committed Documents">
+        <div className="grid gap-3 sm:grid-cols-2">
+          {committedOrders.map((scan) => (
+            <div key={scan.id} className="rounded-lg border border-zinc-200 bg-white p-3 text-sm">
+              <div className="font-semibold">{scan.documentType}</div>
+              <div className="text-slate">{new Date(scan.createdAt).toLocaleDateString()}</div>
+              <div className="mt-2">{scan.lines.length} parsed lines</div>
+            </div>
+          ))}
+          {!committedOrders.length ? <div className="text-sm text-slate">No committed ordering documents yet.</div> : null}
         </div>
       </SectionCard>
     </div>

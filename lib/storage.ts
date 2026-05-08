@@ -5,9 +5,10 @@ import { create } from "zustand";
 import { SEEDED_FORECASTS, SEEDED_HISTORY, SEEDED_WEEKLY_PLAN } from "@/lib/seed";
 import { canUseRecipe, normalizeWeeklyPlan, optimizeWeeklyPlan } from "@/lib/analytics";
 import { WeatherForecastDay } from "@/lib/types";
-import { AppLanguage, DailyForecast, HistoricalRecord, WeeklyPlan } from "@/lib/types";
+import { AppLanguage, DailyForecast, HistoricalRecord, ScannedDocument, WeeklyPlan } from "@/lib/types";
 
-const STORAGE_KEY = "nova-sbe-canteen-framework-v2";
+const STORAGE_KEY = "tempero-pilot-v1";
+const AUTH_KEY = "tempero-authenticated";
 
 type PersistedState = {
   language: AppLanguage;
@@ -15,17 +16,24 @@ type PersistedState = {
   weeklyPlan: WeeklyPlan;
   forecasts: DailyForecast[];
   history: HistoricalRecord[];
+  scans: ScannedDocument[];
 };
 
 type CanteenState = PersistedState & {
   hydrated: boolean;
+  authenticated: boolean;
   hydrate: () => void;
+  login: (username: string, password: string) => boolean;
+  logout: () => void;
   setLanguage: (language: AppLanguage) => void;
   setSelectedDay: (day: string) => void;
   updatePlanSlot: (day: string, category: string, slotIndex: number, recipeId: string) => void;
   updateForecast: (day: string, recipeId: string, patch: Partial<DailyForecast>) => void;
   optimizePlan: (weather: WeatherForecastDay[]) => void;
   addHistoryRecord: (record: HistoricalRecord) => void;
+  addScan: (scan: ScannedDocument) => void;
+  updateScan: (scanId: string, patch: Partial<ScannedDocument>) => void;
+  commitScan: (scanId: string) => void;
 };
 
 const defaults: PersistedState = {
@@ -33,7 +41,8 @@ const defaults: PersistedState = {
   selectedDay: "Day 1",
   weeklyPlan: normalizeWeeklyPlan(SEEDED_WEEKLY_PLAN),
   forecasts: SEEDED_FORECASTS,
-  history: SEEDED_HISTORY
+  history: SEEDED_HISTORY,
+  scans: []
 };
 
 function persist(state: PersistedState) {
@@ -47,18 +56,39 @@ function snapshot(state: CanteenState): PersistedState {
     selectedDay: state.selectedDay,
     weeklyPlan: state.weeklyPlan,
     forecasts: state.forecasts,
-    history: state.history
+    history: state.history,
+    scans: state.scans
   };
 }
 
 export const useCanteenStore = create<CanteenState>((set, get) => ({
   ...defaults,
   hydrated: false,
+  authenticated: false,
   hydrate: () => {
     if (typeof window === "undefined") return;
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const parsed = raw ? (JSON.parse(raw) as PersistedState) : defaults;
-    set({ ...defaults, ...parsed, weeklyPlan: normalizeWeeklyPlan(parsed.weeklyPlan ?? defaults.weeklyPlan), hydrated: true });
+    set({
+      ...defaults,
+      ...parsed,
+      weeklyPlan: normalizeWeeklyPlan(parsed.weeklyPlan ?? defaults.weeklyPlan),
+      scans: parsed.scans ?? [],
+      authenticated: window.localStorage.getItem(AUTH_KEY) === "true",
+      hydrated: true
+    });
+  },
+  login: (username, password) => {
+    const ok = username === "user" && password === "password1";
+    if (ok && typeof window !== "undefined") {
+      window.localStorage.setItem(AUTH_KEY, "true");
+      set({ authenticated: true });
+    }
+    return ok;
+  },
+  logout: () => {
+    if (typeof window !== "undefined") window.localStorage.removeItem(AUTH_KEY);
+    set({ authenticated: false });
   },
   setLanguage: (language) => {
     set({ language });
@@ -113,6 +143,18 @@ export const useCanteenStore = create<CanteenState>((set, get) => ({
   },
   addHistoryRecord: (record) => {
     set((state) => ({ history: [...state.history, record] }));
+    persist(snapshot(get()));
+  },
+  addScan: (scan) => {
+    set((state) => ({ scans: [scan, ...state.scans] }));
+    persist(snapshot(get()));
+  },
+  updateScan: (scanId, patch) => {
+    set((state) => ({ scans: state.scans.map((scan) => (scan.id === scanId ? { ...scan, ...patch } : scan)) }));
+    persist(snapshot(get()));
+  },
+  commitScan: (scanId) => {
+    set((state) => ({ scans: state.scans.map((scan) => (scan.id === scanId ? { ...scan, committed: true } : scan)) }));
     persist(snapshot(get()));
   }
 }));

@@ -13,7 +13,7 @@ export function StatusPill({
         "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
         tone === "good" && "bg-sage/15 text-sage",
         tone === "warning" && "bg-coral/15 text-coral",
-        tone === "neutral" && "bg-gold/15 text-amber-800"
+        tone === "neutral" && "bg-zinc-100 text-slate"
       )}
     >
       {children}

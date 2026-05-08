@@ -38,21 +38,18 @@ function translate(value: string, language: "English" | "Portuguese") {
 }
 
 export function PageHeader({
-  eyebrow,
   title,
   description
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
-  description: string;
+  description?: string;
 }) {
   const language = useCanteenStore((state) => state.language);
 
   return (
     <div className="mb-5">
-      <div className="text-sm font-medium uppercase tracking-[0.18em] text-slate">{translate(eyebrow, language)}</div>
-      <h2 className="mt-2 text-2xl font-semibold tracking-tight">{translate(title, language)}</h2>
-      <p className="mt-2 max-w-2xl text-sm text-slate">{translate(description, language)}</p>
+      <h2 className="text-2xl font-semibold tracking-tight">{translate(title, language)}</h2>
     </div>
   );
 }

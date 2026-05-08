@@ -63,6 +63,29 @@ export type HistoricalRecord = {
   unitPrice: number;
 };
 
+export type ScanDocumentType = "invoice" | "recipe sheet" | "ordering" | "sales" | "unknown";
+
+export type ParsedScanLine = {
+  label: string;
+  quantity: number;
+  unit: string;
+  unitCost?: number;
+  total?: number;
+};
+
+export type ScannedDocument = {
+  id: string;
+  createdAt: string;
+  documentType: ScanDocumentType;
+  imageDataUrl: string;
+  parsedText: string;
+  supplier?: string;
+  documentDate?: string;
+  totalValue?: number;
+  lines: ParsedScanLine[];
+  committed: boolean;
+};
+
 export type WeatherForecastDay = {
   date: string;
   maxTemperatureC: number;

@@ -5,9 +5,7 @@ export default function InsightPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Data Analytics Zone"
-        title="Insight"
-        description="Compare costs, revenue, purchase order values, and unit pricing through the required analysis modules."
+        title="Insights"
       />
       <InsightClientPage />
     </div>

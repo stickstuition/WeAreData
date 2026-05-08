@@ -5,9 +5,7 @@ export default function DailyItemLabPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Operation Zone"
-        title="DailyItemLab"
-        description="Prepare the selected Dashboard day with recipes, suppliers, forecasts, two-day purchasing logic, and digital variance notes."
+        title="Menu Plan"
       />
       <DailyItemLabClientPage />
     </div>

@@ -186,6 +186,250 @@ export const RECIPES: Recipe[] = [
     ]
   },
   {
+    id: "pumpkin-sweet-potato-soup",
+    name: "Pumpkin and sweet potato soup",
+    portugueseName: "Sopa de abóbora e batata-doce",
+    category: "Soup",
+    sellingPricePerPortion: 1.3,
+    prepNotes: "Sopa line from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "pumpkin", quantityPerPortion: 0.09, unit: "kg", supplierId: "cascais-produce", unitCost: 1.6 },
+      { name: "sweet potato", quantityPerPortion: 0.06, unit: "kg", supplierId: "cascais-produce", unitCost: 1.8 }
+    ]
+  },
+  {
+    id: "zucchini-coriander-soup",
+    name: "Zucchini and coriander soup",
+    portugueseName: "Sopa de curgete com coentros",
+    category: "Soup",
+    sellingPricePerPortion: 1.3,
+    prepNotes: "Sopa line from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "zucchini", quantityPerPortion: 0.12, unit: "kg", supplierId: "cascais-produce", unitCost: 1.9 },
+      { name: "coriander", quantityPerPortion: 0.01, unit: "kg", supplierId: "cascais-produce", unitCost: 6.5 }
+    ]
+  },
+  {
+    id: "leek-carrot-soup",
+    name: "Leek and carrot soup",
+    portugueseName: "Sopa de alho-francês e cenoura",
+    category: "Soup",
+    sellingPricePerPortion: 1.3,
+    prepNotes: "Sopa line from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "leek", quantityPerPortion: 0.06, unit: "kg", supplierId: "cascais-produce", unitCost: 2.4 },
+      { name: "carrot", quantityPerPortion: 0.08, unit: "kg", supplierId: "cascais-produce", unitCost: 1.1 }
+    ]
+  },
+  {
+    id: "beef-burger-mustard-pasta",
+    name: "Beef burger with mustard sauce and pasta",
+    portugueseName: "Hambúrguer de vaca com molho de mostarda e massa",
+    category: "Meat/Fish",
+    sellingPricePerPortion: 4.5,
+    prepNotes: "Meat/Fish main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "beef burger", quantityPerPortion: 0.16, unit: "kg", supplierId: "atlantic-protein", unitCost: 9.2 },
+      { name: "pasta", quantityPerPortion: 0.08, unit: "kg", supplierId: "cascais-produce", unitCost: 1.8 },
+      { name: "mustard sauce", quantityPerPortion: 0.03, unit: "kg", supplierId: "cascais-produce", unitCost: 3.6 }
+    ]
+  },
+  {
+    id: "hake-fillet-vegetable-puree",
+    name: "Portuguese-style hake fillet with vegetable purée",
+    portugueseName: "Filete de pescada à portuguesa com puré de legumes",
+    category: "Meat/Fish",
+    sellingPricePerPortion: 4.5,
+    prepNotes: "Meat/Fish main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "hake fillet", quantityPerPortion: 0.17, unit: "kg", supplierId: "atlantic-protein", unitCost: 7.8 },
+      { name: "vegetable puree", quantityPerPortion: 0.16, unit: "kg", supplierId: "cascais-produce", unitCost: 1.9 }
+    ]
+  },
+  {
+    id: "suckling-pig-rissois-bean-rice",
+    name: "Suckling pig rissóis with bean rice",
+    portugueseName: "Rissóis de leitão com arroz de feijão",
+    category: "Meat/Fish",
+    sellingPricePerPortion: 4.5,
+    prepNotes: "Meat/Fish main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "suckling pig rissóis", quantityPerPortion: 0.18, unit: "kg", supplierId: "atlantic-protein", unitCost: 8.6 },
+      { name: "bean rice", quantityPerPortion: 0.16, unit: "kg", supplierId: "cascais-produce", unitCost: 1.7 }
+    ]
+  },
+  {
+    id: "roasted-chicken-leg-spaghetti",
+    name: "Roasted chicken leg with sautéed spaghetti",
+    portugueseName: "Perna de frango assada com esparguete salteado",
+    category: "Meat/Fish",
+    sellingPricePerPortion: 4.5,
+    prepNotes: "Meat/Fish main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "chicken leg", quantityPerPortion: 0.2, unit: "kg", supplierId: "atlantic-protein", unitCost: 4.9 },
+      { name: "spaghetti", quantityPerPortion: 0.08, unit: "kg", supplierId: "cascais-produce", unitCost: 1.8 }
+    ]
+  },
+  {
+    id: "pork-escalopes-beer-carrot-rice",
+    name: "Pork escalopes with beer sauce and carrot rice",
+    portugueseName: "Escalopes de porco com molho de cerveja e arroz de cenoura",
+    category: "Meat/Fish",
+    sellingPricePerPortion: 4.5,
+    prepNotes: "Meat/Fish main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "pork escalopes", quantityPerPortion: 0.17, unit: "kg", supplierId: "atlantic-protein", unitCost: 5.8 },
+      { name: "carrot rice", quantityPerPortion: 0.15, unit: "kg", supplierId: "cascais-produce", unitCost: 1.5 },
+      { name: "beer sauce", quantityPerPortion: 0.03, unit: "l", supplierId: "nova-bakery", unitCost: 2.2 }
+    ]
+  },
+  {
+    id: "peas-poached-eggs-white-rice",
+    name: "Peas with poached eggs and white rice",
+    portugueseName: "Ervilhas com ovos escalfados e arroz branco",
+    category: "Vegetarian",
+    sellingPricePerPortion: 4,
+    prepNotes: "Green Vibes vegetarian main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "peas", quantityPerPortion: 0.12, unit: "kg", supplierId: "cascais-produce", unitCost: 2.2 },
+      { name: "egg", quantityPerPortion: 1, unit: "unit", supplierId: "cascais-produce", unitCost: 0.24 },
+      { name: "rice", quantityPerPortion: 0.08, unit: "kg", supplierId: "cascais-produce", unitCost: 1.4 }
+    ]
+  },
+  {
+    id: "mushroom-soy-ragu-bow-tie-pasta",
+    name: "Mushroom and soy ragù with bow-tie pasta",
+    portugueseName: "Ragù de cogumelos com soja e massa laços",
+    category: "Vegetarian",
+    sellingPricePerPortion: 4,
+    prepNotes: "Green Vibes vegetarian main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "mushrooms", quantityPerPortion: 0.09, unit: "kg", supplierId: "cascais-produce", unitCost: 3.8 },
+      { name: "soy protein", quantityPerPortion: 0.05, unit: "kg", supplierId: "cascais-produce", unitCost: 4.2 },
+      { name: "bow-tie pasta", quantityPerPortion: 0.08, unit: "kg", supplierId: "cascais-produce", unitCost: 1.8 }
+    ]
+  },
+  {
+    id: "ricotta-spinach-cannelloni",
+    name: "Ricotta and spinach cannelloni",
+    portugueseName: "Canelone de ricota e espinafres",
+    category: "Vegetarian",
+    sellingPricePerPortion: 4.2,
+    prepNotes: "Green Vibes vegetarian main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "ricotta", quantityPerPortion: 0.07, unit: "kg", supplierId: "cascais-produce", unitCost: 6.5 },
+      { name: "spinach", quantityPerPortion: 0.06, unit: "kg", supplierId: "cascais-produce", unitCost: 3.4 },
+      { name: "cannelloni pasta", quantityPerPortion: 0.08, unit: "kg", supplierId: "cascais-produce", unitCost: 2.1 }
+    ]
+  },
+  {
+    id: "ratatouille-chickpea-rice",
+    name: "Ratatouille with chickpea rice",
+    portugueseName: "Ratatouille com arroz de grão-de-bico",
+    category: "Vegetarian",
+    sellingPricePerPortion: 4,
+    prepNotes: "Green Vibes vegetarian main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "ratatouille vegetables", quantityPerPortion: 0.16, unit: "kg", supplierId: "cascais-produce", unitCost: 2.4 },
+      { name: "chickpea rice", quantityPerPortion: 0.15, unit: "kg", supplierId: "cascais-produce", unitCost: 1.8 }
+    ]
+  },
+  {
+    id: "vegetables-a-bras",
+    name: "Sautéed vegetables with eggs and matchstick potatoes",
+    portugueseName: "Legumes à Brás",
+    category: "Vegetarian",
+    sellingPricePerPortion: 4,
+    prepNotes: "Green Vibes vegetarian main from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "mixed vegetables", quantityPerPortion: 0.14, unit: "kg", supplierId: "cascais-produce", unitCost: 1.7 },
+      { name: "egg", quantityPerPortion: 1, unit: "unit", supplierId: "cascais-produce", unitCost: 0.24 },
+      { name: "matchstick potatoes", quantityPerPortion: 0.09, unit: "kg", supplierId: "cascais-produce", unitCost: 2.2 }
+    ]
+  },
+  {
+    id: "codfish-fritters-tomato-rice",
+    name: "Codfish fritters with tomato rice",
+    portugueseName: "Pataniscas de bacalhau com arroz de tomate",
+    category: "Nomad",
+    sellingPricePerPortion: 5.2,
+    prepNotes: "Nomad premium dish from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "codfish fritters", quantityPerPortion: 0.18, unit: "kg", supplierId: "atlantic-protein", unitCost: 8.8 },
+      { name: "tomato rice", quantityPerPortion: 0.15, unit: "kg", supplierId: "cascais-produce", unitCost: 1.6 }
+    ]
+  },
+  {
+    id: "chicken-curry-basmati-kachumber",
+    name: "Chicken curry with basmati rice and kachumber salad",
+    portugueseName: "Caril de frango com arroz basmati e salada kachumber",
+    category: "Nomad",
+    sellingPricePerPortion: 5.2,
+    prepNotes: "Nomad premium dish from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "chicken", quantityPerPortion: 0.18, unit: "kg", supplierId: "atlantic-protein", unitCost: 5.4 },
+      { name: "basmati rice", quantityPerPortion: 0.08, unit: "kg", supplierId: "cascais-produce", unitCost: 2.1 },
+      { name: "kachumber salad", quantityPerPortion: 0.06, unit: "kg", supplierId: "cascais-produce", unitCost: 2.6 }
+    ]
+  },
+  {
+    id: "roasted-turkey-leg-bbq-wedges",
+    name: "Roasted turkey leg with BBQ sauce, wedges and green beans",
+    portugueseName: "Perna de peru assada com molho BBQ, batatas e feijão-verde",
+    category: "Nomad",
+    sellingPricePerPortion: 5.2,
+    prepNotes: "Nomad premium dish from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "turkey leg", quantityPerPortion: 0.2, unit: "kg", supplierId: "atlantic-protein", unitCost: 6.8 },
+      { name: "potato wedges", quantityPerPortion: 0.14, unit: "kg", supplierId: "cascais-produce", unitCost: 1.2 },
+      { name: "green beans", quantityPerPortion: 0.07, unit: "kg", supplierId: "cascais-produce", unitCost: 2.8 }
+    ]
+  },
+  {
+    id: "pork-loin-farinheira-fries",
+    name: "Pork loin with farinheira sauce and fries",
+    portugueseName: "Lombo de porco com molho de farinheira e batatas fritas",
+    category: "Nomad",
+    sellingPricePerPortion: 5.2,
+    prepNotes: "Nomad premium dish from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "pork loin", quantityPerPortion: 0.18, unit: "kg", supplierId: "atlantic-protein", unitCost: 6.1 },
+      { name: "farinheira sauce", quantityPerPortion: 0.04, unit: "kg", supplierId: "atlantic-protein", unitCost: 7.5 },
+      { name: "fries", quantityPerPortion: 0.14, unit: "kg", supplierId: "cascais-produce", unitCost: 1.5 }
+    ]
+  },
+  {
+    id: "roasted-squid-tentacles-potatoes-greens",
+    name: "Roasted squid tentacles with potatoes and sautéed greens",
+    portugueseName: "Tentáculos de pota no forno com batatas e grelos",
+    category: "Nomad",
+    sellingPricePerPortion: 5.5,
+    prepNotes: "Nomad premium dish from the Mon Bistrot weekly menu.",
+    active: true,
+    ingredients: [
+      { name: "squid tentacles", quantityPerPortion: 0.18, unit: "kg", supplierId: "atlantic-protein", unitCost: 9.6 },
+      { name: "potatoes", quantityPerPortion: 0.14, unit: "kg", supplierId: "cascais-produce", unitCost: 1.2 },
+      { name: "sautéed greens", quantityPerPortion: 0.07, unit: "kg", supplierId: "cascais-produce", unitCost: 2.9 }
+    ]
+  },
+  {
     id: "green-salad",
     name: "Green salad",
     portugueseName: "Salada verde",

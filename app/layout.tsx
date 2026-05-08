@@ -10,9 +10,17 @@ const fontSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "NOVA Canteen Digital Assistant",
-  description:
-    "A planning assistant for canteen production, purchasing, history, and financial insight."
+  title: "TEMPERO",
+  description: "TEMPERO pilot for menu planning, ordering, document capture, and canteen insight.",
+  applicationName: "TEMPERO",
+  appleWebApp: {
+    capable: true,
+    title: "TEMPERO",
+    statusBarStyle: "default"
+  },
+  formatDetection: {
+    telephone: false
+  }
 };
 
 export default function RootLayout({

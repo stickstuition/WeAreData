@@ -20,14 +20,38 @@ function normalizeCondition(condition = ""): WeatherType {
   return "sunny";
 }
 
+function normalizeWeatherCode(code: number): WeatherType {
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(code)) return "rainy";
+  if ([45, 48, 1, 2, 3].includes(code)) return "cloudy";
+  return "sunny";
+}
+
 export async function GET() {
   const key = process.env.GOOGLE_WEATHER_API_KEY;
 
   if (!key) {
-    return NextResponse.json({
-      forecast: [],
-      message: "Add GOOGLE_WEATHER_API_KEY to enable Google Weather forecasts; using planning assumptions for now."
-    });
+    try {
+      const url = new URL("https://api.open-meteo.com/v1/forecast");
+      url.searchParams.set("latitude", String(NOVA_SBE_CARCAVELOS.latitude));
+      url.searchParams.set("longitude", String(NOVA_SBE_CARCAVELOS.longitude));
+      url.searchParams.set("daily", "weather_code,temperature_2m_max");
+      url.searchParams.set("timezone", "Europe/Lisbon");
+      url.searchParams.set("forecast_days", "10");
+      const response = await fetch(url, { next: { revalidate: 60 * 60 * 3 } });
+      if (!response.ok) throw new Error("Open-Meteo unavailable");
+      const data = await response.json();
+      const forecast: WeatherForecastDay[] = (data.daily?.time ?? []).map((date: string, index: number) => ({
+        date,
+        maxTemperatureC: Math.round(data.daily.temperature_2m_max?.[index] ?? 20),
+        condition: normalizeWeatherCode(Number(data.daily.weather_code?.[index] ?? 0))
+      }));
+      return NextResponse.json({ forecast, source: "open-meteo" });
+    } catch {
+      return NextResponse.json({
+        forecast: [],
+        message: "Weather forecast unavailable; using planning assumptions for now."
+      });
+    }
   }
 
   const url = new URL("https://weather.googleapis.com/v1/forecast/days:lookup");

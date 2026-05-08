@@ -296,6 +296,30 @@ export function getVarianceRows(plan: WeeklyPlan, forecasts: DailyForecast[], da
   });
 }
 
+export function getDailyReviewRows(plan: WeeklyPlan, forecasts: DailyForecast[], day: string, history: HistoricalRecord[], weather?: WeatherForecastDay) {
+  return getVarianceRows(plan, forecasts, day, history, weather).map((row) => {
+    const waste = Math.max(row.planned - row.actual, 0);
+    const shortage = Math.max(row.actual - row.planned, 0);
+    const optimizedNext = Math.max(8, Math.round(row.auto.value + shortage * 0.65 - waste * 0.45));
+    const recommendation =
+      row.actual === 0
+        ? "enter actuals"
+        : shortage > row.planned * 0.08
+          ? "underproduced"
+          : waste > row.planned * 0.08
+            ? "overproduced"
+            : "on target";
+
+    return {
+      ...row,
+      waste,
+      shortage,
+      optimizedNext,
+      recommendation
+    };
+  });
+}
+
 export function getHistoryTrendRows(history: HistoricalRecord[]) {
   return history.map((item) => ({
     ...item,

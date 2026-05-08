@@ -9,23 +9,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#11243D",
-        mist: "#F5F7FB",
-        coral: "#F66B4E",
-        sage: "#6D9F71",
+        ink: "#111111",
+        mist: "#F6F6F6",
+        coral: "#D62F2F",
+        sage: "#2F8D46",
         gold: "#E4B84C",
-        slate: "#6C788A"
+        slate: "#666666"
       },
       boxShadow: {
-        soft: "0 24px 50px -24px rgba(17, 36, 61, 0.35)"
+        soft: "0 18px 42px -28px rgba(0, 0, 0, 0.45)"
       },
       fontFamily: {
         sans: ["var(--font-sans)"]
       },
-      backgroundImage: {
-        hero:
-          "radial-gradient(circle at top left, rgba(246,107,78,0.22), transparent 30%), radial-gradient(circle at top right, rgba(109,159,113,0.22), transparent 26%), linear-gradient(180deg, #fffefb 0%, #f5f7fb 100%)"
-      }
+      backgroundImage: {}
     }
   },
   plugins: []
